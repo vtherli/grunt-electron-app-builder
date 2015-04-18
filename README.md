@@ -1,5 +1,7 @@
 # grunt-electron-app-builder
 
+This is the first electron builder after atom-shell got renamed to electron in this [pull](https://github.com/atom/electron/pull/1389) - inspired from [grunt-electron-app-builder](https://github.com/entropi/grunt-atom-shell-app-builder)
+
 Helps build electron baed applications for mac, win and linux with grunt. It will download the prebuilt binaries for either the latest or a specific version, unpack them, and add your application source to the extracted distirbution.
 
 ## Getting Started
@@ -74,10 +76,8 @@ Note that building `'darwin'` packages on a windows host is currently unsupporte
 - Add support for further application customization (name, icon, etc)
 
 ## Release History
-- 2014-05-21    initial release
-- 2014-11-22	updated to new electron release architecture naming scheme
-- 2014-11-24	added support for linux x64
+- 2015-04-19    initial release
 
 ## License
-Copyright (c) 2014 Chad Fawcett
+Copyright (c) 2014 Vasumithra Therli
 Licensed under the Apache 2.0 license.
