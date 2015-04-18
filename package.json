@@ -1,6 +1,6 @@
 {
   "name": "grunt-electron-app-builder",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "Creates atom-shell based applications",
   "repository": {
     "type": "git",
