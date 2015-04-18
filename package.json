@@ -1,21 +1,17 @@
 {
-  "name": "grunt-atom-shell-app-builder",
-  "version": "0.0.7",
+  "name": "grunt-electron-app-builder",
+  "version": "0.0.1",
   "description": "Creates atom-shell based applications",
   "repository": {
     "type": "git",
-    "url": "git://github.com/entropi/grunt-atom-shell-app-builder.git"
+    "url": "git://github.com/vtherli/grunt-electron-app-builder.git"
   },
-  "author": {
-    "name": "Chad Fawcett",
-    "email": "chad@useless.net",
-    "url": "https://github.com/entropi"
-  },
+  "author": "Vasumithra Therli <vtherli@gmail.com> (https://github.com/vtherli)",
   "license": "Apache-2.0",
   "bugs": {
-    "url": "https://github.com/entropi/grunt-atom-shell-app-builder/issues"
+    "url": "https://github.com/vtherli/grunt-electron-app-builder/issues"
   },
-  "homepage": "https://github.com/entropi/grunt-atom-shell-app-builder",
+  "homepage": "https://github.com/vtherli/grunt-electron-app-builder",
   "devDependencies": {
     "grunt": "^0.4.5"
   },
@@ -28,6 +24,7 @@
     "decompress-zip": "0.0.6"
   },
   "keywords": [
-    "gruntplugin"
-  ]
+    "electron app builder electron-builder electron-app-builder"
+  ],
+  "scripts": {}
 }

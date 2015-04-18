@@ -1,8 +1,8 @@
 /*
- * grunt-atom-shell-app-builder
- * https://github.com/entropi/grunt-atom-shell-app-builder
+ * grunt-electron-app-builder
+ * https://github.com/vtherli/grunt-electron-app-builder
  *
- * Copyright (c) 2014 Chad Fawcett
+ * Copyright (c) 2015 Vasumithra Therli
  *
  * Licensed under the Apache 2.0 license.
  */
@@ -19,12 +19,12 @@ var _ = require('lodash');
 module.exports = function(grunt) {
 
     grunt.registerTask(
-        'build-atom-shell-app',
-        'Package the app as an atom-shell application',
+        'build-electron-app',
+        'Package the app as an electron application',
         function() {
             var done = this.async();
             var options = this.options({
-                atom_shell_version: null,
+                electron_version: null,
                 build_dir: "build",
                 cache_dir: "cache",
                 app_dir: "app",
@@ -44,7 +44,7 @@ module.exports = function(grunt) {
             }
 
             if ((process.platform == 'win32') && options.platforms.indexOf('darwin') != -1) {
-                grunt.log.warn("Due to symlinks in the atom-shell zip, darwin builds are not supported on Windows and will be skipped.");
+                grunt.log.warn("Due to symlinks in the electron zip, darwin builds are not supported on Windows and will be skipped.");
                 options.platforms.splice(options.platforms.indexOf('darwin'), 1);
             }
 
@@ -82,15 +82,15 @@ module.exports = function(grunt) {
 
     function getLatestTagIfNeeded(options, callback)
     {
-        if (options.atom_shell_version)
+        if (options.electron_version)
             callback(null, options, null);
         else
         {
             request({
-                    url: 'https://api.github.com/repos/atom/atom-shell/releases',
+                    url: 'https://api.github.com/repos/atom/electron/releases',
                     json: true,
                     headers: {
-                        'User-Agent': "grunt-atom-shell-app-builder"
+                        'User-Agent': "grunt-electron-app-builder"
                     }
                 }
                 , function(error, response, body) {
@@ -102,7 +102,7 @@ module.exports = function(grunt) {
                         callback(new Error("github API unexpected response in getLatestTagIfNeeded() with HTTP response code of " + response.statusCode));
 
                     var releaseInfo = _.find(body, {'prerelease' : false });
-                    options.atom_shell_version = releaseInfo.tag_name;
+                    options.electron_version = releaseInfo.tag_name;
                     callback(null, options, body);
                 }
             );
@@ -113,20 +113,20 @@ module.exports = function(grunt) {
     {
         if (responseBody)
         {
-            var releaseInfo = _.find(responseBody, {'tag_name' : options.atom_shell_version });
+            var releaseInfo = _.find(responseBody, {'tag_name' : options.electron_version });
             if (!releaseInfo)
             {
-                callback(new Error("Could not find a release with tag " + options.atom_shell_version));
+                callback(new Error("Could not find a release with tag " + options.electron_version));
             }
             callback(null, options, releaseInfo);
         }
         else
         {
             request({
-                    url: 'https://api.github.com/repos/atom/atom-shell/releases',
+                    url: 'https://api.github.com/repos/atom/electron/releases',
                     json: true,
                     headers: {
-                        'User-Agent': "grunt-atom-shell-app-builder"
+                        'User-Agent': "grunt-electron-app-builder"
                     }
                 }
                 , function(error, response, body) {
@@ -137,10 +137,10 @@ module.exports = function(grunt) {
                     if (response.statusCode != 200)
                         callback(new Error("github API unexpected response in verifyTag() with HTTP response code of " + response.statusCode));
 
-                    var releaseInfo = _.find(body, {'tag_name' : options.atom_shell_version });
+                    var releaseInfo = _.find(body, {'tag_name' : options.electron_version });
                     if (!releaseInfo)
                     {
-                        callback(new Error("Could not find a release with tag " + options.atom_shell_version));
+                        callback(new Error("Could not find a release with tag " + options.electron_version));
                     }
                     callback(null, options, releaseInfo);
                 }
@@ -163,7 +163,7 @@ module.exports = function(grunt) {
 
     function downloadIndividualRelease(options, releaseInfo, platform, callback)
     {
-        var assetName = "atom-shell-" + options.atom_shell_version + "-" + addArchitectureToPlatform(platform) + ".zip";
+        var assetName = "electron-" + options.electron_version + "-" + addArchitectureToPlatform(platform) + ".zip";
         var foundAsset = _.find(releaseInfo.assets, {'name' : assetName });
         if (!foundAsset) {
             grunt.log.writeln("Asset not found: " + assetName);
@@ -190,12 +190,12 @@ module.exports = function(grunt) {
                 return;
             }
         }
-        grunt.log.writeln(" Downloading atom-shell for " + platform);
+        grunt.log.writeln(" Downloading electron for " + platform);
         var bar;
         request({
                 url: assetUrl,
                 headers: {
-                    'User-Agent': "grunt-atom-shell-app-builder",
+                    'User-Agent': "grunt-electron-app-builder",
                     "Accept" : "application/octet-stream"
                 }
             }).on('end', function() {
@@ -218,10 +218,10 @@ module.exports = function(grunt) {
         async.eachSeries(options.platforms,
             function(platform, localcallback) {
                 grunt.log.ok("Extracting " + platform);
-                wrench.rmdirSyncRecursive(path.join(options.build_dir, platform, "atom-shell"), true);
+                wrench.rmdirSyncRecursive(path.join(options.build_dir, platform), true);
                 wrench.mkdirSyncRecursive(path.join(options.build_dir, platform));
-                var zipPath = path.join(options.cache_dir, "atom-shell-" + options.atom_shell_version + "-" + addArchitectureToPlatform(platform) + ".zip");
-                var destPath = path.join(options.build_dir, platform, "atom-shell");
+                var zipPath = path.join(options.cache_dir, "electron-" + options.electron_version + "-" + addArchitectureToPlatform(platform) + ".zip");
+                var destPath = path.join(options.build_dir, platform);
                 if (process.platform != 'win32' && platform == 'darwin')
                 {
                     spawn = require('child_process').spawn;
@@ -267,11 +267,11 @@ module.exports = function(grunt) {
 
         options.platforms.forEach(function (requestedPlatform) {
 
-            var buildOutputDir = path.join(options.build_dir, requestedPlatform, "atom-shell");
+            var buildOutputDir = path.join(options.build_dir, requestedPlatform);
             var appOutputDir;
 
             if (isPlatformRequested(requestedPlatform, "darwin")) {
-                appOutputDir = path.join(buildOutputDir, "Atom.app", "Contents","Resources", "app");
+                appOutputDir = path.join(buildOutputDir, "Electron.app", "Contents","Resources", "app");
             }
             else if (isPlatformRequested(requestedPlatform, "win32") ||
                      isPlatformRequested(requestedPlatform, "linux")) {
