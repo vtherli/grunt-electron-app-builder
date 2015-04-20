@@ -77,7 +77,3 @@ Note that building `'darwin'` packages on a windows host is currently unsupporte
 
 ## Release History
 - 2015-04-19    initial release
-
-## License
-Copyright (c) 2014 Vasumithra Therli
-Licensed under the Apache 2.0 license.
