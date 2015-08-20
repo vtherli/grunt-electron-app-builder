@@ -15,6 +15,7 @@ var wrench = require('wrench');
 var decompressZip = require('decompress-zip');
 var progress = require('progress');
 var _ = require('lodash');
+var glob = require('glob');
 
 module.exports = function(grunt) {
 
@@ -265,6 +266,27 @@ module.exports = function(grunt) {
     {
         grunt.log.subhead("Adding app to releases.")
 
+        var appFiles = null;
+
+        if (options.app_files && options.app_files.length) {
+          var appFilesInclude = [];
+          var appFilesExclude = [];
+          appFiles = [];
+
+          options.app_files.forEach(function(f) {
+            if (f.substr(0,1) == '!') {
+              appFilesExclude.push(f.substr(1));
+            }
+            else {
+              appFilesInclude.push(f);
+            }
+          })
+
+          appFilesInclude.forEach(function(f) {
+            Array.prototype.push.apply(appFiles, glob.sync(f, {ignore: appFilesExclude}));
+          });
+        }
+
         options.platforms.forEach(function (requestedPlatform) {
 
             var buildOutputDir = path.join(options.build_dir, requestedPlatform);
@@ -282,15 +304,41 @@ module.exports = function(grunt) {
                 grunt.log.fail("Failed to copy app, platform not understood: " + requestedPlatform);
             }
 
-            wrench.copyDirSyncRecursive(options.app_dir, appOutputDir, {
-                forceDelete: true,
-                excludeHiddenUnix: true,
-                preserveFiles: false,
-                preserveTimestamps: true,
-                inflateSymlinks: true
-            });
+            if (appOutputDir) {
+              if (appFiles) {
+                try {
+                  if (fs.statSync(appOutputDir).isDirectory()) {
+                    wrench.rmdirSyncRecursive(appOutputDir);
+                  }
+                } catch(e) { }
 
-            grunt.log.ok("Build for platform " + requestedPlatform + " located at " + buildOutputDir);
+                fs.mkdirSync(appOutputDir);
+                for (var i=0,l=appFiles.length; i<l; i++) {
+                  var appFileDest = path.join(appOutputDir, appFiles[i])
+                  var stats = fs.statSync(appFiles[i])
+                  if (stats.isDirectory()) {
+                    fs.mkdirSync(appFileDest)
+                  }
+                  else {
+                    fs.writeFileSync(appFileDest, fs.readFileSync(appFiles[i]));
+                    var appFileStat =  fs.lstatSync(appFiles[i]);
+                    fs.chmodSync(appFileDest, appFileStat.mode);
+                    fs.utimesSync(appFileDest, appFileStat.atime, appFileStat.mtime)
+                  }
+                }
+              }
+              else {
+                wrench.copyDirSyncRecursive(options.app_dir, appOutputDir, {
+                    forceDelete: true,
+                    excludeHiddenUnix: true,
+                    preserveFiles: false,
+                    preserveTimestamps: true,
+                    inflateSymlinks: true
+                });
+              }
+
+              grunt.log.ok("Build for platform " + requestedPlatform + " located at " + buildOutputDir);
+            }
         });
 
         callback();
