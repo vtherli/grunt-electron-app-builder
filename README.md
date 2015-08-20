@@ -33,7 +33,7 @@ module.exports = function(grunt) {
 
 ### Options
 
-#### options.atom_shell_version
+#### options.electron_version
 Type: `String`
 Default value: `most recent release`
 Required: `no`
