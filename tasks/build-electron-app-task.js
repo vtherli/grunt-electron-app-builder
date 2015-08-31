@@ -90,7 +90,8 @@ module.exports = function(grunt) {
                     url: 'https://api.github.com/repos/atom/electron/releases',
                     json: true,
                     headers: {
-                        'User-Agent': "grunt-electron-app-builder"
+                        'User-Agent': "grunt-electron-app-builder",
+                        'Authorization': options.Authorization ? options.Authorization : ''
                     }
                 }
                 , function(error, response, body) {
@@ -126,7 +127,8 @@ module.exports = function(grunt) {
                     url: 'https://api.github.com/repos/atom/electron/releases',
                     json: true,
                     headers: {
-                        'User-Agent': "grunt-electron-app-builder"
+                        'User-Agent': "grunt-electron-app-builder",
+                        'Authorization': options.Authorization ? options.Authorization : ''
                     }
                 }
                 , function(error, response, body) {
