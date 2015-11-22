@@ -126,7 +126,7 @@ module.exports = function(grunt) {
         else
         {
             request({
-                    url: 'https://api.github.com/repos/atom/electron/releases',
+                    url: 'https://api.github.com/repos/atom/electron/releases?page=2',
                     json: true,
                     headers: {
                         'User-Agent': "grunt-electron-app-builder",
