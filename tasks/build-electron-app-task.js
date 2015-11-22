@@ -86,8 +86,10 @@ module.exports = function(grunt) {
             callback(null, options, null);
         else
         {
+            
+            //TODO : FIX THAT :/
             request({
-                    url: 'https://api.github.com/repos/atom/electron/releases',
+                    url: 'https://api.github.com/repos/atom/electron/releases?page=2',
                     json: true,
                     headers: {
                         'User-Agent': "grunt-electron-app-builder",
